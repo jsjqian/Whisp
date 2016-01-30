@@ -17,7 +17,8 @@ public class Whisper {
     private String description;
     private Location location;
 
-    private static final long MINUTE = 1000 * 60;
+    private static final long SECOND = 1000;
+    private static final long MINUTE = SECOND * 60;
     private static final long HOUR = MINUTE * 60;
     private static final long DAY = HOUR * 24;
 
@@ -43,9 +44,21 @@ public class Whisper {
         }
         else if (diff > DAY){
 
+            s = String.valueOf((int)diff / DAY);
+        }
+        else if (diff > HOUR){
 
+            s = String.valueOf((int)diff / HOUR);
+        }
+        else if (diff > MINUTE){
+
+            s = String.valueOf((int)diff / MINUTE);
+        }
+        else{
+
+            s = "Less than a minute ago";
         }
 
-        return null;
+        return s;
     }
 }
