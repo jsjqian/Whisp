@@ -11,15 +11,21 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.util.Log;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 
 //IMPORTS FOR THE AUDIO CAPTURE//
@@ -29,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.jar.Manifest;
 
 import android.app.Activity;
@@ -70,10 +77,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
-    private static final String[] dummy = {"wheat", "rye", "sourdough"};
+    private ArrayAdapter<String> adapter;
     private String filename;
     private GoogleApiClient client;
 
+    private Location currentLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         ListView list = (ListView) findViewById(R.id.list);
 
-        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.row, R.id.text11, dummy);
+        String[] data = {};
+        this.adapter = new ArrayAdapter<String>(this, R.layout.row, R.id.text11, data);
         list.setAdapter(adapter);
         b1 = (Button) findViewById(R.id.button);
         b1.setOnTouchListener(new View.OnTouchListener() {
@@ -296,8 +305,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Location location = LocationServices.FusedLocationApi.getLastLocation(client);
         if (location != null){
 
-            ParseGeoPoint point = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+            this.currentLocation = location;
+
         }
+    }
+
+    private void update(){
+
+        ParseGeoPoint userLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
+        query.whereWithinMiles("location", userLocation, 0.005).setLimit(10);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e != null && objects != null && objects.size() > 0 ){
+
+                    for (ParseObject o: objects){
+
+                        adapter.add(o.toString());
+                    }
+                }
+                else{
+
+                    Log.e("JACK", "woops");
+                }
+            }
+        });
     }
 
     @Override
