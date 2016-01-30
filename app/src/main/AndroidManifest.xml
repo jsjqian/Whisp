@@ -2,23 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jack.whisp">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+
     <application
+
+        android:name="com.example.jack.whisp.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".NewsFeedActivity">
+        android:theme="@style/AppTheme"
+        >
+
+        <meta-data
+            android:name="com.parse.APPLICATION_ID"
+            android:value="bOvJCk5HSJqL1DYVddn9STHpz5fSfzphcqTFqP5B" />
+        <meta-data
+            android:name="com.parse.CLIENT_KEY"
+            android:value="4tRjcVoH0tfupE7913bhjXEZxA3jIaDVR7rJjqZ6" />
+
+
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
-        <activity android:name=".Splash">
+        <activity android:name=".Pop"
+            android:theme="@style/AppTheme.CustomTheme"></activity>
+        <activity android:name=".Splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 

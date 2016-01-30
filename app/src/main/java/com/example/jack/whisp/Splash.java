@@ -10,7 +10,7 @@ import android.widget.ImageView;
 /**
  * Created by Justin on 1/30/2016.
  */
-public class Splash extends Activity {
+public class Splash extends Activity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,12 +18,11 @@ public class Splash extends Activity {
         setContentView(R.layout.activity_splash);
 
         final ImageView iv = (ImageView) findViewById(R.id.logo);
-        final Animation an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.wind);
-        final Animation an2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
+        final Animation wind = AnimationUtils.loadAnimation(getBaseContext(), R.anim.wind);
+        final Animation fade = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
 
-
-        iv.startAnimation(an);
-        an.setAnimationListener(new Animation.AnimationListener() {
+        iv.startAnimation(wind);
+        wind.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -31,9 +30,9 @@ public class Splash extends Activity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                iv.startAnimation(an2);
+                iv.startAnimation(fade);
                 finish();
-                Intent intent = new Intent(Splash.this,NewsFeedActivity.class);
+                Intent intent = new Intent(Splash.this, MainActivity.class);
                 startActivity(intent);
             }
 
@@ -43,7 +42,4 @@ public class Splash extends Activity {
             }
         });
     }
-
-
-
 }
