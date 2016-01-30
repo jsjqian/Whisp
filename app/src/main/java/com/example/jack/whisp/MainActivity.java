@@ -1,15 +1,26 @@
 package com.example.jack.whisp;
 
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.content.Intent;
 
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+
+
 //IMPORTS FOR THE AUDIO CAPTURE//
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Manifest;
+
 import android.app.Activity;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -29,17 +40,23 @@ public class MainActivity extends AppCompatActivity {
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
     private MediaRecorder recorder = null;
     private int currentFormat = 0;
-    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4,             MediaRecorder.OutputFormat.THREE_GPP };
+    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP };
     private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
     private static final String[] dummy = {"wheat", "rye", "sourdough"};
+    private String filename;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // for M (jack dai's phone)
+        String[] permissions = {android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(this, permissions, 0);
+
         ListView list = (ListView)findViewById(R.id.list);
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.list_item, dummy);
         list.setAdapter(adapter);
@@ -64,6 +81,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void writetoParse(){
+
+        ParseFile parseFile = new ParseFile(new File(filename));
+        parseFile.saveInBackground();
+
+        ParseObject whisper = new ParseObject("Whisper");
+        whisper.put("filename", filename);
+        whisper.put("audio", parseFile);
+        whisper.saveInBackground();
+    }
 
     private String getFilename(){
         String filepath = Environment.getExternalStorageDirectory().getPath();
@@ -80,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(output_formats[currentFormat]);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        recorder.setOutputFile(getFilename());
+        this.filename = getFilename();
+        recorder.setOutputFile(filename);
         recorder.setOnErrorListener(errorListener);
         recorder.setOnInfoListener(infoListener);
         recorder.setMaxDuration(10000);
@@ -89,9 +117,11 @@ public class MainActivity extends AppCompatActivity {
             recorder.prepare();
             recorder.start();
         } catch (IllegalStateException e) {
+            Log.d("HHHHHHH", "HHHHHH");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("HHHHHHH", "IIIIIII");
         }
     }
     private MediaRecorder.OnErrorListener errorListener = new        MediaRecorder.OnErrorListener() {
@@ -111,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
         if(null != recorder){
             recorder.stop();
             recorder.reset();
+
+            writetoParse();
 
             recorder = null;
             startActivity(new Intent(MainActivity.this, Pop.class));
