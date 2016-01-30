@@ -8,6 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.content.Intent;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
@@ -30,7 +33,7 @@ import android.view.View;
 import android.widget.Button;
 //END OF IMPORTS FOR AUDIO CAPTURE//
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     //VARS FOR AUDIO CAPTURE
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String[] dummy = {"wheat", "rye", "sourdough"};
     private String filename;
+    private GoogleApiClient client;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // for M (jack dai's phone)
-        String[] permissions = {android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                android.Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView)findViewById(R.id.list);
@@ -79,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        if (client == null){
+
+            client = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     private void writetoParse(){
@@ -102,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
+
     private void startRecording(){
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -117,13 +134,14 @@ public class MainActivity extends AppCompatActivity {
             recorder.prepare();
             recorder.start();
         } catch (IllegalStateException e) {
-            Log.d("HHHHHHH", "HHHHHH");
-            e.printStackTrace();
+            Log.d("JACK", "IllegalState");
+
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("HHHHHHH", "IIIIIII");
+            Log.d("JACK", "IOException");
         }
     }
+
     private MediaRecorder.OnErrorListener errorListener = new        MediaRecorder.OnErrorListener() {
         @Override
         public void onError(MediaRecorder mr, int what, int extra) {
@@ -149,4 +167,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    protected void onStart(){
+
+
+    }
+
+    @Override
+    protected void onStop(){
+
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        
+    }
 }
