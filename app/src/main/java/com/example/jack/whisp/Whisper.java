@@ -13,15 +13,17 @@ import java.util.Date;
 public class Whisper {
 
     private long time;
+    public String objectId;
 
     private static final long SECOND = 1000;
     private static final long MINUTE = SECOND * 60;
     private static final long HOUR = MINUTE * 60;
     private static final long DAY = HOUR * 24;
 
-    public Whisper(long t){
+    public Whisper(long t, String id){
 
         time = t;
+        objectId = id;
     }
 
     @Override
@@ -30,29 +32,34 @@ public class Whisper {
         long diff = System.currentTimeMillis() - time;
 
         String s;
+        long l;
         if (diff > 5 * DAY){
 
             Date d = new Date(time);
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-            s = format.format(d);
+            return format.format(d);
         }
         else if (diff > DAY){
 
-            s = String.valueOf((int)diff / DAY);
+            l = DAY;
+            s = "day";
         }
         else if (diff > HOUR){
 
-            s = String.valueOf((int)diff / HOUR);
+            l = HOUR;
+            s = "hour";
         }
         else if (diff > MINUTE){
 
-            s = String.valueOf((int)diff / MINUTE);
+            l = MINUTE;
+            s = "minute";
         }
         else{
 
-            s = "Less than a minute ago";
+            return "Less than a minute ago";
         }
 
-        return s;
+        int i = (int) diff / (int) l;
+        return i == 1 ? String.format("1 %s ago", s) : String.format("%s %ss ago", i, s);
     }
 }
