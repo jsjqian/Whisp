@@ -14,7 +14,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String[] dummy = {"wheat", "rye", "sourdough"};
     private String filename;
     private GoogleApiClient client;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -172,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
 
-        //if(checkLocationPermission()) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -183,16 +185,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(client);
+        if (location != null){
 
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
-
-        double currentLong = mLastLocation.getLongitude();
-        double currentLat = mLastLocation.getLatitude();
+            ParseGeoPoint point = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
 
     }
 
@@ -212,6 +213,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        
+
     }
 }
