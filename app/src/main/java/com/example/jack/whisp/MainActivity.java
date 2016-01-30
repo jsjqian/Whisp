@@ -158,9 +158,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
-
+        Button up=(Button) findViewById(R.id.upvote);
+        Button down=(Button) findViewById(R.id.downvote);
+        up.setOnClickListener(increaseVote);
+        down.setOnClickListener(decreaseVote);
 
     }
+
+    View.OnClickListener increaseVote = new View.OnClickListener(){
+        public void onClick(View v){
+
+        }
+    };
+    View.OnClickListener decreaseVote = new View.OnClickListener(){
+        public void onClick(View v){
+
+        }
+    };
 
     private void writetoParse() {
 
