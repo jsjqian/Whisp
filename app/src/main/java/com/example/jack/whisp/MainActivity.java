@@ -186,9 +186,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(client);
+
         if (location != null){
 
+            double longitude = location.getLongitude();
+            double latitude = location.getLatitude();
+            double altitude = location.getAltitude();
+
             ParseGeoPoint point = new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+
+
         }
     }
 
