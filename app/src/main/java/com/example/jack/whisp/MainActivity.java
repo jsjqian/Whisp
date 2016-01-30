@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
+import android.content.Intent;
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             recorder.reset();
 
             recorder = null;
-         //   startActivity(new Intent(MainActivity.this, Pop.class));
+            startActivity(new Intent(MainActivity.this, Pop.class));
         }
     }
 
