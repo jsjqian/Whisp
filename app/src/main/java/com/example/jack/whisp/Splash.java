@@ -17,12 +17,11 @@ public class Splash extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        final ImageView iv = (ImageView) findViewById(R.id.logo);
-        final Animation wind = AnimationUtils.loadAnimation(getBaseContext(), R.anim.wind);
+        final ImageView logo = (ImageView) findViewById(R.id.logo);
+        final Animation wind2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.wind2);
         final Animation fade = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
-
-        iv.startAnimation(wind);
-        wind.setAnimationListener(new Animation.AnimationListener() {
+        logo.startAnimation(wind2);
+        wind2.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -30,7 +29,7 @@ public class Splash extends Activity{
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                iv.startAnimation(fade);
+                logo.startAnimation(fade);
                 finish();
                 Intent intent = new Intent(Splash.this, MainActivity.class);
                 startActivity(intent);
@@ -41,5 +40,6 @@ public class Splash extends Activity{
 
             }
         });
+
     }
 }

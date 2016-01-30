@@ -9,25 +9,19 @@ import java.util.Date;
 /**
  * Created by Jack on 1/30/2016.
  */
-// model used by adapter in main listview
+// wrapper so the adapter looks nicer
 public class Whisper {
 
     private long time;
-    private File file;
-    private String description;
-    private Location location;
 
     private static final long SECOND = 1000;
     private static final long MINUTE = SECOND * 60;
     private static final long HOUR = MINUTE * 60;
     private static final long DAY = HOUR * 24;
 
-    public Whisper(long t, File f, String d, Location l){
+    public Whisper(long t){
 
         time = t;
-        file = f;
-        description = d;
-        location = l;
     }
 
     @Override
