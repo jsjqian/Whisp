@@ -22,8 +22,10 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:id="@+id/logo"
-        android:src="@drawable/final_logo"
+        android:src="@drawable/newlogo2"
         android:layout_below="@+id/imageView"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        />
+
 
 </RelativeLayout>
