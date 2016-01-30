@@ -20,6 +20,4 @@
         android:layout_above="@id/button"
         >
     </ListView>
-
-
 </RelativeLayout>
