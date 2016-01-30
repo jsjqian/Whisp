@@ -234,8 +234,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             recorder.stop();
             recorder.reset();
 
-            recorder = null;
-
             initiatePopupWindow();
         }
     }
@@ -335,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         else{
 
             Log.d("JACK", "failed to get location");
+
         }
     }
 
