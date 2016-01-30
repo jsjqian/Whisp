@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         startRecording();
                         break;
                     case MotionEvent.ACTION_UP:
-                        AppLog.logString("stop Recording");
+                        AppLog.logString("Stop Recording");
                         stopRecording();
                         break;
                 }
