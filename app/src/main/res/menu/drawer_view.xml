@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_first_fragment"
+            android:icon="@drawable/avatar_symbol"
+            android:title="Me" />
+        <item
+            android:id="@+id/nav_second_fragment"
+            android:icon="@drawable/newlogo2"
+            android:title="My Whispers" />
+        <item
+            android:id="@+id/nav_third_fragment"
+            android:icon="@drawable/lightning_bolt"
+            android:title="Shouts!" />
+
+        <item
+            android:id="@+id/nav_fourth_fragment"
+            android:icon="@drawable/preferences"
+            android:title="Settings" />
+    </group>
+</menu>
