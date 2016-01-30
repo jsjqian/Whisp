@@ -1,5 +1,7 @@
 package com.example.jack.whisp;
 
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
     private MediaRecorder recorder = null;
     private int currentFormat = 0;
-    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP };
-    private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
+    private int output_formats[] = {MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP};
+    private String file_exts[] = {AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP};
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
@@ -58,21 +60,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // for M (jack dai's phone)
         String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
-                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                android.Manifest.permission.ACCESS_FINE_LOCATION};
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, permissions, 0);
 
-        ListView list = (ListView)findViewById(R.id.list);
+        ListView list = (ListView) findViewById(R.id.list);
 
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.row, R.id.text11, dummy);
         list.setAdapter(adapter);
-        b1=(Button)findViewById(R.id.button);
+        b1 = (Button) findViewById(R.id.button);
         b1.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // TODO Auto-generated method stub
-                switch(event.getAction()){
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         AppLog.logString("Start Recording");
                         startRecording();
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        if (client == null){
+        if (client == null) {
 
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private void writetoParse(){
+    private void writetoParse() {
 
         ParseFile parseFile = new ParseFile(new File(filename));
         parseFile.saveInBackground();
@@ -107,18 +109,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         whisper.saveInBackground();
     }
 
-    private String getFilename(){
+    private String getFilename() {
         String filepath = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(filepath,AUDIO_RECORDER_FOLDER);
+        File file = new File(filepath, AUDIO_RECORDER_FOLDER);
 
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
         }
 
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
 
-    private void startRecording(){
+    private void startRecording() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(output_formats[currentFormat]);
@@ -140,7 +142,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.d("JACK", "IOException");
         }
     }
-    private MediaRecorder.OnErrorListener errorListener = new        MediaRecorder.OnErrorListener() {
+
+    private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
         @Override
         public void onError(MediaRecorder mr, int what, int extra) {
             AppLog.logString("Error: " + what + ", " + extra);
@@ -153,8 +156,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             AppLog.logString("Warning: " + what + ", " + extra);
         }
     };
-    private void stopRecording(){
-        if(null != recorder){
+
+    private void stopRecording() {
+        if (null != recorder) {
             recorder.stop();
             recorder.reset();
 
@@ -168,23 +172,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
 
+        //if(checkLocationPermission()) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+
+        double currentLong = mLastLocation.getLongitude();
+        double currentLat = mLastLocation.getLatitude();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+
 
     }
 
     @Override
     protected void onStart(){
 
-
+        client.connect();
+        super.onStart();
     }
 
     @Override
     protected void onStop(){
 
-
+        client.disconnect();
+        super.onStop();
     }
 
     @Override
