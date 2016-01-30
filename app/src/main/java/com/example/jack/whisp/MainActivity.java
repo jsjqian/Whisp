@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
         if(null != recorder){
             recorder.stop();
             recorder.reset();
-            recorder.release();
 
             recorder = null;
+         //   startActivity(new Intent(MainActivity.this, Pop.class));
         }
     }
 
