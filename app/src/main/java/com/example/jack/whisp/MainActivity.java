@@ -95,9 +95,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         ListView list = (ListView) findViewById(R.id.list);
 
-        String[] data = {};
-        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.text11, data);
+        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.text11);
         list.setAdapter(adapter);
+        if (client == null) {
+
+            client = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
         b1 = (Button) findViewById(R.id.button);
         b1.setOnTouchListener(new View.OnTouchListener() {
 
@@ -109,8 +117,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         AppLog.logString("Start Recording");
                         try {
                             startRecording();
-                        }
-                        catch(Exception e){
+                        } catch (Exception e) {
                             Log.e("JACK", "failed to start recording");
                         }
                         break;
@@ -120,8 +127,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         try {
                             stopRecording();
-                        }
-                        catch(Exception e){
+                        } catch (Exception e) {
 
                             Log.e("JACK", "failed to stop recording");
                         }
@@ -131,16 +137,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        if (client == null) {
 
-            client = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-
-        update();
     }
 
     private void writetoParse() {
@@ -263,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             writetoParse();
 
             File file = new File(filePath);
-            boolean delete = file.delete();
+            //boolean delete = file.delete();
             //use pathname, delete file
             pwindo.dismiss();
 
@@ -310,13 +307,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (location != null){
 
             this.currentLocation = location;
+            update();
+        }
+        else{
+
+            Log.d("JACK", "failed to get location");
         }
     }
 
     private void update(){
 
-        if(currentLocation == null)
+        if(currentLocation == null){
+
+            Log.d("JACK", "returning");
             return;
+        }
 
         ParseGeoPoint userLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
@@ -324,11 +329,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e != null && objects != null && objects.size() > 0 ){
+                if (e == null && objects != null && objects.size() > 0 ){
 
-                    for (ParseObject o: objects)
-                        adapter.add(o.toString());
+                    Log.d("JACK", objects.toString());
+                    for (ParseObject o: objects){
 
+                        adapter.add(o.getUpdatedAt().toString());
+                    }
                 }
                 else{
 
@@ -336,6 +343,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
+        ListView list = (ListView) findViewById(R.id.list);
+
     }
 
     @Override
