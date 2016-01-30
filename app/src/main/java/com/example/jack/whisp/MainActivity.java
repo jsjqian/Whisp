@@ -1,21 +1,28 @@
 package com.example.jack.whisp;
 
-import android.location.Location;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.content.Intent;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Manifest;
+
 import android.app.Activity;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -23,11 +30,9 @@ import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 //END OF IMPORTS FOR AUDIO CAPTURE//
 
-public class MainActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     //VARS FOR AUDIO CAPTURE
@@ -37,24 +42,30 @@ public class MainActivity extends AppCompatActivity implements
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
     private MediaRecorder recorder = null;
     private int currentFormat = 0;
-    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4,             MediaRecorder.OutputFormat.THREE_GPP };
+    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP };
     private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
     private static final String[] dummy = {"wheat", "rye", "sourdough"};
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
+    private String filename;
+    private GoogleApiClient client;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // for M (jack dai's phone)
+        String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                android.Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, permissions, 0);
+
         ListView list = (ListView)findViewById(R.id.list);
 
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.row, R.id.text11, dummy);
         list.setAdapter(adapter);
-
         b1=(Button)findViewById(R.id.button);
         b1.setOnTouchListener(new View.OnTouchListener() {
 
@@ -75,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
+        if (client == null){
+
+            client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
@@ -85,6 +96,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void writetoParse(){
+
+        ParseFile parseFile = new ParseFile(new File(filename));
+        parseFile.saveInBackground();
+
+        ParseObject whisper = new ParseObject("Whisper");
+        whisper.put("filename", filename);
+        whisper.put("audio", parseFile);
+        whisper.saveInBackground();
+    }
 
     private String getFilename(){
         String filepath = Environment.getExternalStorageDirectory().getPath();
@@ -96,12 +117,14 @@ public class MainActivity extends AppCompatActivity implements
 
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
     }
+
     private void startRecording(){
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(output_formats[currentFormat]);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        recorder.setOutputFile(getFilename());
+        this.filename = getFilename();
+        recorder.setOutputFile(filename);
         recorder.setOnErrorListener(errorListener);
         recorder.setOnInfoListener(infoListener);
         recorder.setMaxDuration(10000);
@@ -110,9 +133,11 @@ public class MainActivity extends AppCompatActivity implements
             recorder.prepare();
             recorder.start();
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            Log.d("JACK", "IllegalState");
+
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("JACK", "IOException");
         }
     }
     private MediaRecorder.OnErrorListener errorListener = new        MediaRecorder.OnErrorListener() {
@@ -133,32 +158,16 @@ public class MainActivity extends AppCompatActivity implements
             recorder.stop();
             recorder.reset();
 
+            writetoParse();
+
             recorder = null;
-         //   startActivity(new Intent(MainActivity.this, Pop.class));
+            startActivity(new Intent(MainActivity.this, Pop.class));
         }
-    }
-
-
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
     }
 
     @Override
     public void onConnected(Bundle bundle) {
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if (mLastLocation != null) {
-            ((TextView)findViewById(R.id.longLat)).setText(String.valueOf(mLastLocation.getLatitude()));
-            ((TextView)findViewById(R.id.longLat)).setText(String.valueOf(mLastLocation.getLongitude()));
-        }
     }
 
     @Override
@@ -167,7 +176,19 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    protected void onStart(){
 
+
+    }
+
+    @Override
+    protected void onStop(){
+
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        
     }
 }
