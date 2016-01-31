@@ -33,8 +33,8 @@
             android:name="com.parse.CLIENT_KEY"
             android:value="4tRjcVoH0tfupE7913bhjXEZxA3jIaDVR7rJjqZ6" />
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBsQqStGLF19NNvYEv4HbAjdwps0wtRdMA" />
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAzWY-KQc0fNnSdDIvGZ0IsUjDZrpL9P1U" />
 
         <activity android:name=".MainActivity">
             <intent-filter>

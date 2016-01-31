@@ -1,15 +1,20 @@
 package com.example.jack.whisp;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +46,8 @@ import com.parse.ParseQuery;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.media.MediaRecorder;
@@ -55,7 +62,7 @@ import android.widget.PopupWindow;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, NavigationView.OnNavigationItemSelectedListener {
 
 
     //VARS FOR AUDIO CAPTURE
@@ -86,10 +93,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Button down;
     private Button shouts;
     private TextView votes;
+    private int mNavItemId;
+    private DrawerLayout mDrawerLayout;
+    private final Handler mDrawerActionHandler = new Handler();
+    private ActionBarDrawerToggle mDrawerToggle;
 
+    private static final String NAV_ITEM_ID = "navItemId";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -97,15 +110,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         down = (Button) findViewById(R.id.downvote);
         votes = (TextView) findViewById(R.id.votes);
 
+
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if (null == savedInstanceState) {
+            mNavItemId = R.id.nav_second_fragment;
+        } else {
+            mNavItemId = savedInstanceState.getInt(NAV_ITEM_ID);
+        }
+
+        //listen to navigation events
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //select the correct nav menu item
+        navigationView.getMenu().findItem(mNavItemId).setChecked(true);
+
+
+        // Find our drawer view This worked before we commented it.
         SwipeRefreshLayout swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipey.setOnRefreshListener(this);
         swipey.setEnabled(true);
+
+
+
 
         //GEORGES CODE FOR THE MAP BUTTON
 
@@ -124,7 +155,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // for M (jack dai's phone)
         String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.ACCESS_FINE_LOCATION};
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.ACCESS_NETWORK_STATE,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                };
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
@@ -175,75 +210,66 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
-
-//        up.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#00CD00"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                }
-//                else {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
-//
-//        down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                } else {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
+        navigate(mNavItemId);
 
     }
 
-//        up.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#00CD00"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                }
-//                else {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
-//
-//        down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                } else {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
-//    }
+
+
+    private void navigate(final int itemId){
+        if (itemId == R.id.nav_first_fragment){
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_fourth_fragment) {
+            //go to settings
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_third_fragment){
+            Intent i = new Intent(MainActivity.this, ShoutMap.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_second_fragment){
+
+        }
+
+
+
+    }
+    @Override
+    public boolean onNavigationItemSelected(final MenuItem menuItem) {
+        //update highlighted item in the navigation menu
+        menuItem.setChecked(true);
+        mNavItemId = menuItem.getItemId();
+
+//        mDrawerLayout.closeDrawer(GravityCompat.START);
+        mDrawerActionHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                navigate(menuItem.getItemId());
+            }
+        }, 250);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.support.v7.appcompat.R.id.home) {
+            return mDrawerToggle.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt(NAV_ITEM_ID, mNavItemId);
+    }
+
 
     private void writetoParse() {
 
@@ -500,25 +526,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawer.openDrawer(GravityCompat.START);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-//
-//    // Make sure this is the method with just `Bundle` as the signature
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        Toast.makeText(this, "Location connection failed", Toast.LENGTH_LONG);
-//    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         Log.d("JACK", "entering onclick");
@@ -577,6 +584,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             // for ActivityCompat#requestPermissions for more details.
             return null;
         }
+
         return LocationServices.FusedLocationApi.getLastLocation(client);
     }
+
+
+
+
+
 }
