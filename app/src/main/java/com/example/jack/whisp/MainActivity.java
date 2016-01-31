@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Button hot;
     Button top;
 
+    private SwipeRefreshLayout swipey;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -136,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         // Find our drawer view This worked before we commented it.
-        SwipeRefreshLayout swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipey.setOnRefreshListener(this);
-        swipey.setEnabled(true);
+        //swipey.setEnabled(true);
 
 
 
@@ -167,14 +169,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 };
         ActivityCompat.requestPermissions(this, permissions, 0);
 
-<<<<<<< Temporary merge branch 1
         ListView list = (ListView) findViewById(R.id.list);
 
         //list.setFocusable(false);
         list.setOnItemClickListener(this);
-=======
 //        list.setOnItemClickListener(this);
->>>>>>> Temporary merge branch 2
 
 //        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
 //        list.setAdapter(adapter);
@@ -568,7 +567,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Log.d("JACK", "entering onclick");
 
-        Whisper whisper = (Whisper) parent.getItemAtPosition(position);
+        ParseObject current = (ParseObject)parent.getItemAtPosition(position);
+        Whisper whisper = new Whisper(System.currentTimeMillis(), current.getObjectId());
         ParseQuery query = new ParseQuery("Whisper");
         ParseObject object;
         try {
@@ -609,6 +609,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onRefresh() {
 
         update();
+        swipey.setRefreshing(false);
+
     }
 
     public Location getLatestLocation() {

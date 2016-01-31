@@ -30,6 +30,7 @@
                 <Button
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
                     android:text="NEW"
                     android:textSize="25dp"
                     android:layout_toStartOf="@+id/hot"
@@ -65,9 +66,8 @@
             <android.support.v4.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@id/button"
                 android:id="@+id/swipe_refresh">
-
+                <!--android:layout_above="@id/button"-->
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
