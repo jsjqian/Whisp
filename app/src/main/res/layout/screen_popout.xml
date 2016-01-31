@@ -2,7 +2,7 @@
     android:id="@+id/popup_element"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#1E90FF"
+    android:background="@drawable/row_background_border"
     android:orientation="vertical"
     android:padding="10sp" >
 

@@ -18,7 +18,7 @@ public class Splash extends Activity{
         setContentView(R.layout.activity_splash);
 
         final ImageView logo = (ImageView) findViewById(R.id.logo);
-        final Animation wind2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.wind2);
+        final Animation wind2 = AnimationUtils.loadAnimation(getBaseContext(), R.anim.opening_animation);
         final Animation fade = AnimationUtils.loadAnimation(getBaseContext(), R.anim.abc_fade_out);
         logo.startAnimation(wind2);
         wind2.setAnimationListener(new Animation.AnimationListener() {
