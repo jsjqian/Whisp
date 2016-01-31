@@ -1,9 +1,9 @@
 package com.example.jack.whisp;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -18,19 +18,17 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.util.Log;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.GetDataCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -40,20 +38,11 @@ import com.parse.ParseQuery;
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
-import java.util.jar.Manifest;
 
-import android.app.Activity;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.view.MotionEvent;
@@ -63,18 +52,8 @@ import android.widget.PopupWindow;
 //END OF IMPORTS FOR AUDIO CAPTURE//
 
 
-
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.PopupWindow;
-import android.widget.Toast;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -103,11 +82,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
 
+    private Button up;
+    private Button down;
+    private Button shouts;
+    private TextView votes;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        up = (Button) findViewById(R.id.upvote);
+        down = (Button) findViewById(R.id.downvote);
+        votes = (TextView) findViewById(R.id.votes);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -117,6 +105,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         SwipeRefreshLayout swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipey.setOnRefreshListener(this);
+        swipey.setEnabled(true);
+
+        //GEORGES CODE FOR THE MAP BUTTON
+
+        mDrawer.
+        shouts = (Button) mDrawer.findViewById(R.id.nav_third_fragment);
+
+        shouts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ShoutMap.class);
+                startActivity(i);
+            }
+        });
+
 
         // for M (jack dai's phone)
         String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
@@ -125,17 +128,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
+
+        //list.setFocusable(false);
         list.setOnItemClickListener(this);
 
-        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.text11);
+        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
         list.setAdapter(adapter);
         if (client == null) {
 
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
-                    .build();
+                    .addApi(AppIndex.API).build();
         }
 
         b1 = (Button) findViewById(R.id.button);
@@ -168,13 +175,46 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
+
+//        up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int current_votes = Integer.parseInt(votes.getText().toString());
+//                if (up.getCurrentTextColor() == 0xFFFFFF) {
+//                    votes.setText(String.valueOf(current_votes + 1));
+//                    up.setBackgroundColor(Color.parseColor("#00CD00"));
+//                    up.setTextColor(Color.parseColor("#FFFFFE"));
+//                }
+//                else {
+//                    votes.setText(String.valueOf(current_votes - 1));
+//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+//                    up.setTextColor(Color.parseColor("#FFFFFF"));
+//                }
+//            }
+//        });
+//
+//        down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int current_votes = Integer.parseInt(votes.getText().toString());
+//                if (up.getCurrentTextColor() == 0xFFFFFF) {
+//                    votes.setText(String.valueOf(current_votes - 1));
+//                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
+//                    up.setTextColor(Color.parseColor("#FFFFFE"));
+//                } else {
+//                    votes.setText(String.valueOf(current_votes + 1));
+//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+//                    up.setTextColor(Color.parseColor("#FFFFFF"));
+//                }
+//            }
+//        });
     }
 
     private void writetoParse() {
 
-        if(currentLocation != null) {
-        ParseFile parseFile = new ParseFile(new File(filePath));
-        parseFile.saveInBackground();
+        if (currentLocation != null) {
+            ParseFile parseFile = new ParseFile(new File(filePath));
+            parseFile.saveInBackground();
 
             ParseObject whisper = new ParseObject("Whisper");
             whisper.put("filename", filePath);
@@ -273,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private View.OnClickListener cancel_button_click_listener = new View.OnClickListener() {
+    private OnClickListener cancel_button_click_listener = new OnClickListener() {
         public void onClick(View v) {
             //use pathname and delete file
             File file = new File(filePath);
@@ -284,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     };
 
-    private View.OnClickListener whisper_click_listener = new View.OnClickListener() {
+    private OnClickListener whisper_click_listener = new OnClickListener() {
         public void onClick(View v) {
 
             writetoParse();
@@ -297,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     };
 
-    private View.OnClickListener replay_click_listener = new View.OnClickListener() {
+    private OnClickListener replay_click_listener = new OnClickListener() {
         public void onClick(View v) {
             MediaPlayer m = new MediaPlayer();
 
@@ -325,26 +365,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.d("JACK","permission problem");
+            Log.d("JACK", "permission problem");
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(client);
-        if (location != null){
+        if (location != null) {
 
             this.currentLocation = location;
             update();
             Log.d("JACK", "I'M HERE AND I GOT THE LOCATION!!!!!!!!");
 
-        }
-        else{
+        } else {
 
             Log.d("JACK", "failed to get location");
         }
     }
 
-    private void update(){
+    private void update() {
 
-        if(currentLocation == null){
+        if (currentLocation == null) {
 
             Log.d("JACK", "returning");
             return;
@@ -356,18 +395,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null && objects != null && objects.size() > 0 ){
+                if (e == null && objects != null && objects.size() > 0) {
 
                     Log.d("JACK", objects.toString());
-                    for (ParseObject o: objects){
+                    for (ParseObject o : objects) {
 
                         long t = o.getCreatedAt().getTime();
                         String id = o.getObjectId();
 
                         adapter.add(new Whisper(t, id));
                     }
-                }
-                else{
+                } else {
 
                     Log.e("JACK", "woops");
                 }
@@ -381,17 +419,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
 
         client.connect();
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
 
         client.disconnect();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
     }
 
     @Override
@@ -437,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         file.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] data, ParseException e) {
-                if (e == null){
+                if (e == null) {
 
                     try {
                         File f = File.createTempFile("audio", "mp4", getCacheDir());
@@ -464,5 +528,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onRefresh() {
 
         update();
+    }
+
+    public Location getLatestLocation() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        return LocationServices.FusedLocationApi.getLastLocation(client);
+
     }
 }

@@ -4,22 +4,29 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/text11"
+        android:id="@+id/time_stamp"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:gravity="center"
+        android:layout_marginTop="45dp"
+        android:textSize="25dp"
+        android:text="time"
         android:textColor="#000000"
         />
 
-    <Button android:text="-"
-        android:id="@+id/button2"
+
+    <Button android:text="+"
+        android:id="@+id/upvote"
         android:textSize="25dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:textAlignment="center"
-        ></Button>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textAlignment="gravity"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/downvote"
+        android:background="#DDDDDD">
+    </Button>
+
 
     <TextView
         android:id="@+id/votes"
@@ -28,18 +35,24 @@
         android:text = "0"
         android:textSize="25dp"
         android:textAlignment="center"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="48dp"/>
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/upvote" />
 
-    <Button android:text="+"
-        android:id="@+id/button1"
+
+    <Button android:text="-"
+        android:id="@+id/downvote"
         android:textSize="25dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="60dp"
-        android:textAlignment="center"
-        ></Button>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textAlignment="gravity"
+        android:background="#DDDDDD"
+        android:layout_below="@+id/votes"
+        android:layout_alignParentEnd="true">
+    </Button>
+
+
 
 </RelativeLayout>
