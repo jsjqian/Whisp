@@ -3,15 +3,21 @@ package com.example.jack.whisp;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.*;
+import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,10 +26,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.util.Log;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.appindexing.Action;
@@ -32,9 +36,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.GetDataCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -44,20 +46,13 @@ import com.parse.ParseQuery;
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.jar.Manifest;
 
-import android.app.Activity;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.view.MotionEvent;
@@ -67,22 +62,13 @@ import android.widget.PopupWindow;
 //END OF IMPORTS FOR AUDIO CAPTURE//
 
 
-
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, NavigationView.OnNavigationItemSelectedListener {
 
 
     //VARS FOR AUDIO CAPTURE
@@ -111,8 +97,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private Button up;
     private Button down;
+    private Button shouts;
     private TextView votes;
+    private int mNavItemId;
+    private DrawerLayout mDrawerLayout;
+    private final Handler mDrawerActionHandler = new Handler();
+    private ActionBarDrawerToggle mDrawerToggle;
 
+    private static final String NAV_ITEM_ID = "navItemId";
 
     Button neww;
     Button hot;
@@ -120,29 +112,76 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if (null == savedInstanceState) {
+            mNavItemId = R.id.nav_second_fragment;
+        } else {
+            mNavItemId = savedInstanceState.getInt(NAV_ITEM_ID);
+        }
+
+        //listen to navigation events
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nvView);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //select the correct nav menu item
+        navigationView.getMenu().findItem(mNavItemId).setChecked(true);
+
+
+        // Find our drawer view This worked before we commented it.
+        SwipeRefreshLayout swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipey.setOnRefreshListener(this);
+        swipey.setEnabled(true);
+
+
+
+
+        //GEORGES CODE FOR THE MAP BUTTON
+
+        /*mDrawer.
+        shouts = (Button) mDrawer.findViewById(R.id.nav_third_fragment);
+
+        shouts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ShoutMap.class);
+                startActivity(i);
+            }
+        });*/
 
 
         // for M (jack dai's phone)
         String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.ACCESS_FINE_LOCATION};
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.ACCESS_NETWORK_STATE,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                };
         ActivityCompat.requestPermissions(this, permissions, 0);
 
+<<<<<<< Temporary merge branch 1
+        ListView list = (ListView) findViewById(R.id.list);
+
+        //list.setFocusable(false);
+        list.setOnItemClickListener(this);
+=======
 //        list.setOnItemClickListener(this);
+>>>>>>> Temporary merge branch 2
 
 //        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
 //        list.setAdapter(adapter);
         if (client == null) {
 
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -180,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
+        navigate(mNavItemId);
 
         neww = (Button) findViewById(R.id.neww);
         neww.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +252,62 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
     }
+
+
+    private void navigate(final int itemId){
+        if (itemId == R.id.nav_first_fragment){
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_fourth_fragment) {
+            //go to settings
+            Intent i = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_third_fragment){
+            Intent i = new Intent(MainActivity.this, ShoutMap.class);
+            startActivity(i);
+
+        }
+        if (itemId == R.id.nav_second_fragment){
+
+        }
+
+
+
+    }
+    @Override
+    public boolean onNavigationItemSelected(final MenuItem menuItem) {
+        //update highlighted item in the navigation menu
+        menuItem.setChecked(true);
+        mNavItemId = menuItem.getItemId();
+
+//        mDrawerLayout.closeDrawer(GravityCompat.START);
+        mDrawerActionHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                navigate(menuItem.getItemId());
+            }
+        }, 250);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.support.v7.appcompat.R.id.home) {
+            return mDrawerToggle.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt(NAV_ITEM_ID, mNavItemId);
+    }
+
 
     private void writetoParse() {
 
@@ -373,27 +469,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.d("JACK","permission problem");
+            Log.d("JACK", "permission problem");
             return;
         }
         Location location = LocationServices.FusedLocationApi.getLastLocation(client);
-        if (location != null){
+        if (location != null) {
 
             this.currentLocation = location;
             update();
             Log.d("JACK", "I'M HERE AND I GOT THE LOCATION!!!!!!!!");
 
-        }
-        else{
+        } else {
 
             Log.d("JACK", "failed to get location");
 
         }
     }
 
-    private void update(){
+    private void update() {
 
-        if(currentLocation == null){
+        if (currentLocation == null) {
 
             Log.d("JACK", "returning");
             return;
@@ -401,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         ParseGeoPoint userLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
-        query.whereWithinMiles("location", userLocation, 0.00378);
+        query.whereWithinMiles("location", userLocation, 0.005);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
@@ -414,6 +509,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
+        ListView list = (ListView) findViewById(R.id.list);
+
     }
 
     @Override
@@ -467,29 +564,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawer.openDrawer(GravityCompat.START);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    // Make sure this is the method with just `Bundle` as the signature
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        Toast.makeText(this, "Location connection failed", Toast.LENGTH_LONG);
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+        Log.d("JACK", "entering onclick");
 
-        Log.d("hello", "hello");
         Whisper whisper = (Whisper) parent.getItemAtPosition(position);
         ParseQuery query = new ParseQuery("Whisper");
         ParseObject object;
@@ -504,7 +582,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         file.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] data, ParseException e) {
-                if (e == null){
+                if (e == null) {
 
                     try {
                         File f = File.createTempFile("audio", "mp4", getCacheDir());
@@ -524,14 +602,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
-
-        class Walking implements Runnable{
-
-
-            @Override
-            public void run() {
-
-            }
-        }
     }
+
+    // called when the user pulls down on the list
+    @Override
+    public void onRefresh() {
+
+        update();
+    }
+
+    public Location getLatestLocation() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+
+        return LocationServices.FusedLocationApi.getLastLocation(client);
+    }
+
+
+
+
+
 }

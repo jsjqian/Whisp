@@ -62,13 +62,21 @@
                     android:id="@+id/top" />
             </TableRow>
 
-            <ListView
+            <android.support.v4.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/list"
-                android:layout_below="@id/drawer_layout"
-                android:layout_gravity="center">
-            </ListView>
+                android:layout_above="@id/button"
+                android:id="@+id/swipe_refresh">
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/list"
+                    >
+                </ListView>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
 
             <!-- The ActionBar displayed at the top -->
             <include
@@ -81,7 +89,6 @@
                 android:id="@+id/flContent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
-
 
             </FrameLayout>
 
@@ -114,5 +121,6 @@
         android:textColor="#1E90FF"
         >
     </Button>
+
 
 </RelativeLayout>

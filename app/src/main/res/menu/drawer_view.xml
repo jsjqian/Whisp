@@ -8,7 +8,7 @@
         <item
             android:id="@+id/nav_second_fragment"
             android:icon="@drawable/newlogo2"
-            android:title="My Whispers" />
+            android:title="Whispers" />
         <item
             android:id="@+id/nav_third_fragment"
             android:icon="@drawable/lightning_bolt"
