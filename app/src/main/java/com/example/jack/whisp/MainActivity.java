@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -24,6 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -133,17 +136,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
+        
+        //list.setFocusable(false);
         list.setOnItemClickListener(this);
 
         this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
         list.setAdapter(adapter);
         if (client == null) {
 
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
-                    .build();
+                    .addApi(AppIndex.API).build();
         }
 
         b1 = (Button) findViewById(R.id.button);
@@ -202,8 +209,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     votes.setText(String.valueOf(current_votes - 1));
                     up.setBackgroundColor(Color.parseColor("#FF3D0D"));
                     up.setTextColor(Color.parseColor("#FFFFFE"));
-                }
-                else {
+                } else {
                     votes.setText(String.valueOf(current_votes + 1));
                     up.setBackgroundColor(Color.parseColor("#DDDDDD"));
                     up.setTextColor(Color.parseColor("#FFFFFF"));
@@ -426,17 +432,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
 
         client.connect();
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
 
         client.disconnect();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
     }
 
     @Override
@@ -466,6 +498,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+
+        Log.d("hello", "hello");
         Whisper whisper = (Whisper) parent.getItemAtPosition(position);
         ParseQuery query = new ParseQuery("Whisper");
         ParseObject object;
@@ -500,5 +534,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
+
+        class Walking implements Runnable{
+
+
+            @Override
+            public void run() {
+
+            }
+        }
     }
 }
