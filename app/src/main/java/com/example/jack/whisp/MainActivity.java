@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
-        
+
         //list.setFocusable(false);
         list.setOnItemClickListener(this);
 
@@ -183,40 +183,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
-
-        up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int current_votes = Integer.parseInt(votes.getText().toString());
-                if (up.getCurrentTextColor() == 0xFFFFFF) {
-                    votes.setText(String.valueOf(current_votes + 1));
-                    up.setBackgroundColor(Color.parseColor("#00CD00"));
-                    up.setTextColor(Color.parseColor("#FFFFFE"));
-                }
-                else {
-                    votes.setText(String.valueOf(current_votes - 1));
-                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-                    up.setTextColor(Color.parseColor("#FFFFFF"));
-                }
-            }
-        });
-
-        down.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int current_votes = Integer.parseInt(votes.getText().toString());
-                if (up.getCurrentTextColor() == 0xFFFFFF) {
-                    votes.setText(String.valueOf(current_votes - 1));
-                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
-                    up.setTextColor(Color.parseColor("#FFFFFE"));
-                } else {
-                    votes.setText(String.valueOf(current_votes + 1));
-                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-                    up.setTextColor(Color.parseColor("#FFFFFF"));
-                }
-            }
-        });
     }
+
+//        up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int current_votes = Integer.parseInt(votes.getText().toString());
+//                if (up.getCurrentTextColor() == 0xFFFFFF) {
+//                    votes.setText(String.valueOf(current_votes + 1));
+//                    up.setBackgroundColor(Color.parseColor("#00CD00"));
+//                    up.setTextColor(Color.parseColor("#FFFFFE"));
+//                }
+//                else {
+//                    votes.setText(String.valueOf(current_votes - 1));
+//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+//                    up.setTextColor(Color.parseColor("#FFFFFF"));
+//                }
+//            }
+//        });
+//
+//        down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int current_votes = Integer.parseInt(votes.getText().toString());
+//                if (up.getCurrentTextColor() == 0xFFFFFF) {
+//                    votes.setText(String.valueOf(current_votes - 1));
+//                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
+//                    up.setTextColor(Color.parseColor("#FFFFFE"));
+//                } else {
+//                    votes.setText(String.valueOf(current_votes + 1));
+//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+//                    up.setTextColor(Color.parseColor("#FFFFFF"));
+//                }
+//            }
+//        });
+//    }
 
     private void writetoParse() {
 
