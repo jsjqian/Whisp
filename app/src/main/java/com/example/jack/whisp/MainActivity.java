@@ -77,6 +77,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
-    private ArrayAdapter<Whisper> adapter;
+    private AudioListAdapter adapter;
 
     private GoogleApiClient client;
 
@@ -117,10 +118,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        up = (Button) findViewById(R.id.upvote);
-        down = (Button) findViewById(R.id.downvote);
-        votes = (TextView) findViewById(R.id.votes);
-
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -135,17 +132,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 android.Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, permissions, 0);
 
-        ListView list = (ListView) findViewById(R.id.list);
+//        list.setOnItemClickListener(this);
 
-        //list.setFocusable(false);
-        list.setOnItemClickListener(this);
-
-        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
-        list.setAdapter(adapter);
+//        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
+//        list.setAdapter(adapter);
         if (client == null) {
 
-            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
-            // See https://g.co/AppIndexing/AndroidStudio for more information.
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -183,59 +175,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return false;
             }
         });
-    }
 
-//        up.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#00CD00"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                }
-//                else {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
-//
-//        down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int current_votes = Integer.parseInt(votes.getText().toString());
-//                if (up.getCurrentTextColor() == 0xFFFFFF) {
-//                    votes.setText(String.valueOf(current_votes - 1));
-//                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
-//                    up.setTextColor(Color.parseColor("#FFFFFE"));
-//                } else {
-//                    votes.setText(String.valueOf(current_votes + 1));
-//                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
-//                    up.setTextColor(Color.parseColor("#FFFFFF"));
-//                }
-//            }
-//        });
-//    }
+    }
 
     private void writetoParse() {
 
         if(currentLocation != null) {
-        ParseFile parseFile = new ParseFile(new File(filePath));
-        parseFile.saveInBackground();
 
-            ParseObject whisper = new ParseObject("Whisper");
-            whisper.put("filename", filePath);
-            whisper.put("audio", parseFile);
-            whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-            whisper.saveInBackground();
+                Log.d("hi", filePath);
+                ParseFile parseFile = new ParseFile(new File(filePath));
+                parseFile.saveInBackground();
+
+                ParseObject whisper = new ParseObject("Whisper");
+                whisper.put("filename", filePath);
+                whisper.put("audio", parseFile);
+                whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                whisper.put("upvotes", 0);
+                whisper.put("downvotes", 0);
+                whisper.saveInBackground();
         }
 
     }
 
     private String getFilename() {
         String filepath = Environment.getExternalStorageDirectory().getPath();
+        Log.d("asdfasdfasa", filepath);
         File file = new File(filepath, AUDIO_RECORDER_FOLDER);
 
         if (!file.exists()) {
@@ -402,29 +366,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         ParseGeoPoint userLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
-        query.whereWithinMiles("location", userLocation, 0.005);
+        query.whereWithinMiles("location", userLocation, 0.00378);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null && objects != null && objects.size() > 0 ){
+                if (e == null && objects != null && objects.size() > 0) {
 
                     Log.d("JACK", objects.toString());
-                    for (ParseObject o: objects){
-
-                        long t = o.getCreatedAt().getTime();
-                        String id = o.getObjectId();
-
-                        adapter.add(new Whisper(t, id));
-                    }
-                }
-                else{
-
-                    Log.e("JACK", "woops");
+                    ListView list = (ListView) findViewById(R.id.list);
+                    adapter = new AudioListAdapter(MainActivity.this, objects);
+                    list.setAdapter(adapter);
                 }
             }
         });
-        ListView list = (ListView) findViewById(R.id.list);
-
     }
 
     @Override
