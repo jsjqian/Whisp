@@ -69,7 +69,7 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
             public void onClick(View view) {
                 ColorStateList mList = up.getTextColors();
                 int color = mList.getDefaultColor();
-                if (color == Color.WHITE) {
+                if (color == Color.BLACK) {
                     votes.setText(String.valueOf((upvotess + 1) - downvotess));
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
                     query.getInBackground(audio.getObjectId(), new GetCallback<ParseObject>() {
@@ -80,8 +80,7 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
                             }
                         }
                     });
-                    up.setBackgroundColor(Color.parseColor("#00CD00"));
-                    up.setTextColor(Color.parseColor("#000000"));
+                    up.setTextColor(Color.parseColor("#00CD00"));
                 }
                 else {
                     votes.setText(String.valueOf((upvotess) - downvotess));
@@ -93,9 +92,8 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
                                 whisper.saveInBackground();
                             }
                         }
-                    });
-                    up.setBackgroundColor(Color.parseColor("#BBBBBB"));
-                    up.setTextColor(Color.parseColor("#FFFFFF"));
+                    });;
+                    up.setTextColor(Color.BLACK);
                 }
             }
         });
@@ -107,7 +105,7 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
             public void onClick(View view) {
                 ColorStateList mList = down.getTextColors();
                 int color = mList.getDefaultColor();
-                if (color == Color.WHITE) {
+                if (color == Color.BLACK) {
                     votes.setText(String.valueOf(upvotess - (downvotess + 1)));
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
                     query.getInBackground(audio.getObjectId(), new GetCallback<ParseObject>() {
@@ -118,8 +116,7 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
                             }
                         }
                     });
-                    down.setBackgroundColor(Color.parseColor("#FF3D0D"));
-                    down.setTextColor(Color.parseColor("#000000"));
+                    down.setTextColor(Color.parseColor("#FF3D0D"));
                 } else {
                     votes.setText(String.valueOf(upvotess - (downvotess)));
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
@@ -131,8 +128,7 @@ public class AudioListAdapter extends ArrayAdapter<ParseObject> {
                             }
                         }
                     });
-                    down.setBackgroundColor(Color.parseColor("#BBBBBB"));
-                    down.setTextColor(Color.parseColor("#FFFFFF"));
+                    down.setTextColor(Color.BLACK);
                 }
             }
         });

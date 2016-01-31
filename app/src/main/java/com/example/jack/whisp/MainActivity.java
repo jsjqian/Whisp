@@ -2,6 +2,7 @@ package com.example.jack.whisp;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -113,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private TextView votes;
 
 
+    Button neww;
+    Button hot;
+    Button top;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +178,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                 }
                 return false;
+            }
+        });
+
+        neww = (Button) findViewById(R.id.neww);
+        neww.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        hot = (Button) findViewById(R.id.hot);
+        hot.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        top = (Button) findViewById(R.id.top);
+        top.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relative_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="#1E90FF">
     <!-- This DrawerLayout has two children at the root  -->
     <android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,6 +19,48 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/row_background_border"
+                android:padding="7dp">
+                <Button
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:text="NEW"
+                    android:textSize="25dp"
+                    android:layout_toStartOf="@+id/hot"
+                    android:background="@drawable/round_buttons"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#1E90FF"
+                    android:id="@+id/neww" />
+                <Button
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:text="HOT"
+                    android:textSize="25dp"
+                    android:background="@drawable/round_buttons"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#1E90FF"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/hot" />
+
+                <Button
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:text="TOP"
+                    android:textSize="25dp"
+                    android:background="@drawable/round_buttons"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#1E90FF"
+                    android:layout_toEndOf="@+id/hot"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/top" />
+            </TableRow>
 
             <ListView
                 android:layout_width="match_parent"
@@ -63,13 +105,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:textSize="30dp"
         android:id="@+id/button"
         android:text="RECORD"
+        android:gravity="center_horizontal"
         android:background="@drawable/round_buttons"
-        android:backgroundTint="#fd392b"
-        android:textColor="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#1E90FF"
         >
-
     </Button>
 
 </RelativeLayout>
