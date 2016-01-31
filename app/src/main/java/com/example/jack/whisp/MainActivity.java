@@ -28,6 +28,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -38,11 +40,16 @@ import com.parse.ParseQuery;
 
 //IMPORTS FOR THE AUDIO CAPTURE//
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -70,8 +77,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     //VARS FOR AUDIO CAPTURE
     Button b1;
@@ -87,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /** Called when the activity is first created. */
     //END VARS FOR AUDIO CAPTURE
 
-    private ArrayAdapter<String> adapter;
-    private String filename;
+    private ArrayAdapter<Whisper> adapter;
+
     private GoogleApiClient client;
 
     private Location currentLocation;
@@ -126,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
+        list.setOnItemClickListener(this);
 
         this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
         list.setAdapter(adapter);
@@ -206,14 +214,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void writetoParse() {
 
+        if(currentLocation != null) {
         ParseFile parseFile = new ParseFile(new File(filePath));
         parseFile.saveInBackground();
 
-        ParseObject whisper = new ParseObject("Whisper");
-        whisper.put("filename", filePath);
-        whisper.put("audio", parseFile);
-        whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-        whisper.saveInBackground();
+            ParseObject whisper = new ParseObject("Whisper");
+            whisper.put("filename", filePath);
+            whisper.put("audio", parseFile);
+            whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            whisper.saveInBackground();
+        }
+
     }
 
     private String getFilename() {
@@ -295,7 +306,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             whisper = (Button) layout.findViewById(R.id.whisper);
             whisper.setOnClickListener(whisper_click_listener);
 
-
             replay = (Button) layout.findViewById(R.id.replay);
             replay.setOnClickListener(replay_click_listener);
 
@@ -335,19 +345,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             try {
                 m.setDataSource(filePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
                 m.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
+                return;
             }
 
             m.start();
             //Mediaplayer to play the audio.
-
         }
     };
 
@@ -370,6 +375,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             this.currentLocation = location;
             update();
+            Log.d("JACK", "I'M HERE AND I GOT THE LOCATION!!!!!!!!");
+
         }
         else{
 
@@ -388,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         ParseGeoPoint userLocation = new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Whisper");
-        query.whereWithinMiles("location", userLocation, 0.005).setLimit(10);
+        query.whereWithinMiles("location", userLocation, 0.005);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
@@ -397,7 +404,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Log.d("JACK", objects.toString());
                     for (ParseObject o: objects){
 
-                        adapter.add(o.getUpdatedAt().toString());
+                        long t = o.getCreatedAt().getTime();
+                        String id = o.getObjectId();
+
+                        adapter.add(new Whisper(t, id));
                     }
                 }
                 else{
@@ -451,5 +461,44 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         Toast.makeText(this, "Location connection failed", Toast.LENGTH_LONG);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Whisper whisper = (Whisper) parent.getItemAtPosition(position);
+        ParseQuery query = new ParseQuery("Whisper");
+        ParseObject object;
+        try {
+            object = query.get(whisper.objectId);
+
+        } catch (ParseException e) {
+            return;
+        }
+
+        ParseFile file = (ParseFile) object.get("audio");
+        file.getDataInBackground(new GetDataCallback() {
+            @Override
+            public void done(byte[] data, ParseException e) {
+                if (e == null){
+
+                    try {
+                        File f = File.createTempFile("audio", "mp4", getCacheDir());
+                        f.deleteOnExit();
+                        FileOutputStream output = new FileOutputStream(f);
+                        output.write(data);
+                        output.close();
+
+                        MediaPlayer player = new MediaPlayer();
+                        player.setDataSource(f.getAbsolutePath());
+                        player.prepare();
+                        player.start();
+
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 }
