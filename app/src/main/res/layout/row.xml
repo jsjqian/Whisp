@@ -18,7 +18,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
-        android:textAlignment="gravity"
+        android:textAlignment="center"
         ></Button>
 
     <TextView
@@ -39,7 +39,7 @@
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="60dp"
-        android:textAlignment="gravity"
+        android:textAlignment="center"
         ></Button>
 
 </RelativeLayout>
