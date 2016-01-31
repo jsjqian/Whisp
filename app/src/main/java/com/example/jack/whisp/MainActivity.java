@@ -9,6 +9,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -75,7 +76,7 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
 
     //VARS FOR AUDIO CAPTURE
@@ -114,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
+        SwipeRefreshLayout swipey = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipey.setOnRefreshListener(this);
 
         // for M (jack dai's phone)
         String[] permissions = {android.Manifest.permission.RECORD_AUDIO,
@@ -337,7 +339,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         else{
 
             Log.d("JACK", "failed to get location");
-
         }
     }
 
@@ -372,8 +373,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
-        ListView list = (ListView) findViewById(R.id.list);
-
     }
 
     @Override
@@ -411,16 +410,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         return super.onOptionsItemSelected(item);
     }
-
-    // Make sure this is the method with just `Bundle` as the signature
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        Toast.makeText(this, "Location connection failed", Toast.LENGTH_LONG);
-    }
+//
+//    // Make sure this is the method with just `Bundle` as the signature
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        Toast.makeText(this, "Location connection failed", Toast.LENGTH_LONG);
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Log.d("JACK", "entering onclick");
 
         Whisper whisper = (Whisper) parent.getItemAtPosition(position);
         ParseQuery query = new ParseQuery("Whisper");
@@ -456,5 +457,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
+    }
+
+    // called when the user pulls down on the list
+    @Override
+    public void onRefresh() {
+
+        update();
     }
 }

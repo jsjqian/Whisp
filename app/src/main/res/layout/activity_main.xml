@@ -15,18 +15,33 @@
         android:layout_height="match_parent">
 
         <!-- This LinearLayout represents the contents of the screen  -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ListView
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/button"
+                android:text="RECORD"></Button>
+
+            <android.support.v4.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/list"
-                android:layout_below="@id/drawer_layout"
-                android:layout_gravity="center">
-            </ListView>
+                android:layout_above="@id/button"
+                android:id="@+id/swipe_refresh">
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/list"
+                    >
+                </ListView>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
 
             <!-- The ActionBar displayed at the top -->
             <include
@@ -40,11 +55,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-
             </FrameLayout>
 
-
-        </LinearLayout>
+        </RelativeLayout>
 
         <!-- The navigation drawer that comes from the left -->
         <!-- Note that `android:layout_gravity` needs to be set to 'start' -->
@@ -58,12 +71,4 @@
             app:headerLayout="@layout/nav_header">
 
     </android.support.v4.widget.DrawerLayout>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/button"
-        android:text="RECORD"></Button>
-
 </RelativeLayout>
