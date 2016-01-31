@@ -164,14 +164,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void writetoParse() {
 
+        if(currentLocation != null) {
         ParseFile parseFile = new ParseFile(new File(filePath));
         parseFile.saveInBackground();
 
-        ParseObject whisper = new ParseObject("Whisper");
-        whisper.put("filename", filePath);
-        whisper.put("audio", parseFile);
-        whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-        whisper.saveInBackground();
+            ParseObject whisper = new ParseObject("Whisper");
+            whisper.put("filename", filePath);
+            whisper.put("audio", parseFile);
+            whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            whisper.saveInBackground();
+        }
+
     }
 
     private String getFilename() {
@@ -253,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             whisper = (Button) layout.findViewById(R.id.whisper);
             whisper.setOnClickListener(whisper_click_listener);
 
-
             replay = (Button) layout.findViewById(R.id.replay);
             replay.setOnClickListener(replay_click_listener);
 
@@ -328,6 +330,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             this.currentLocation = location;
             update();
+            Log.d("JACK", "I'M HERE AND I GOT THE LOCATION!!!!!!!!");
+
         }
         else{
 

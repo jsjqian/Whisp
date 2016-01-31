@@ -20,6 +20,14 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/list"
+                android:layout_below="@id/drawer_layout"
+                android:layout_gravity="center">
+            </ListView>
+
             <!-- The ActionBar displayed at the top -->
             <include
                 layout="@layout/toolbar"
@@ -34,6 +42,8 @@
 
 
             </FrameLayout>
+
+
         </LinearLayout>
 
         <!-- The navigation drawer that comes from the left -->
@@ -48,18 +58,12 @@
             app:headerLayout="@layout/nav_header">
 
     </android.support.v4.widget.DrawerLayout>
-    <ListView
+
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/list"
-        android:layout_below="@id/drawer_layout"
-        android:layout_gravity="center">
-    </ListView>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/button"
-            android:text="RECORD"></Button>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/button"
+        android:text="RECORD"></Button>
 
 </RelativeLayout>
