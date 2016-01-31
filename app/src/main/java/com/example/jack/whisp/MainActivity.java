@@ -3,6 +3,7 @@ package com.example.jack.whisp;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
@@ -76,6 +77,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
@@ -105,11 +107,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
 
+    private Button up;
+    private Button down;
+    private TextView votes;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        up = (Button) findViewById(R.id.upvote);
+        down = (Button) findViewById(R.id.downvote);
+        votes = (TextView) findViewById(R.id.votes);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -130,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //list.setFocusable(false);
         list.setOnItemClickListener(this);
 
-        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.text11);
+        this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.time_stamp);
         list.setAdapter(adapter);
         if (client == null) {
 
@@ -171,6 +181,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                 }
                 return false;
+            }
+        });
+
+        up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int current_votes = Integer.parseInt(votes.getText().toString());
+                if (up.getCurrentTextColor() == 0xFFFFFF) {
+                    votes.setText(String.valueOf(current_votes + 1));
+                    up.setBackgroundColor(Color.parseColor("#00CD00"));
+                    up.setTextColor(Color.parseColor("#FFFFFE"));
+                }
+                else {
+                    votes.setText(String.valueOf(current_votes - 1));
+                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+                    up.setTextColor(Color.parseColor("#FFFFFF"));
+                }
+            }
+        });
+
+        down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int current_votes = Integer.parseInt(votes.getText().toString());
+                if (up.getCurrentTextColor() == 0xFFFFFF) {
+                    votes.setText(String.valueOf(current_votes - 1));
+                    up.setBackgroundColor(Color.parseColor("#FF3D0D"));
+                    up.setTextColor(Color.parseColor("#FFFFFE"));
+                } else {
+                    votes.setText(String.valueOf(current_votes + 1));
+                    up.setBackgroundColor(Color.parseColor("#DDDDDD"));
+                    up.setTextColor(Color.parseColor("#FFFFFF"));
+                }
             }
         });
     }
@@ -491,5 +534,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         });
+
+        class Walking implements Runnable{
+
+
+            @Override
+            public void run() {
+
+            }
+        }
     }
 }
