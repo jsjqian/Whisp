@@ -25,6 +25,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignStart="@+id/downvote"
         android:textColor="#FFFFFF"
+        android:focusable="false"
         android:background="#BBBBBB">
     </Button>
 
@@ -50,6 +51,7 @@
         android:layout_height="40dp"
         android:textAlignment="gravity"
         android:background="#BBBBBB"
+        android:focusable="false"
         android:layout_below="@+id/votes"
         android:textColor="#FFFFFF"
         android:layout_alignParentEnd="true">

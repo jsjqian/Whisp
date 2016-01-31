@@ -178,22 +178,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void writetoParse() {
 
         if(currentLocation != null) {
-        ParseFile parseFile = new ParseFile(new File(filePath));
-        parseFile.saveInBackground();
 
-            ParseObject whisper = new ParseObject("Whisper");
-            whisper.put("filename", filePath);
-            whisper.put("audio", parseFile);
-            whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-            whisper.put("upvotes", "0");
-            whisper.put("downvotes", "0");
-            whisper.saveInBackground();
+                Log.d("hi", filePath);
+                ParseFile parseFile = new ParseFile(new File(filePath));
+                parseFile.saveInBackground();
+
+                ParseObject whisper = new ParseObject("Whisper");
+                whisper.put("filename", filePath);
+                whisper.put("audio", parseFile);
+                whisper.put("location", new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                whisper.put("upvotes", 0);
+                whisper.put("downvotes", 0);
+                whisper.saveInBackground();
         }
 
     }
 
     private String getFilename() {
         String filepath = Environment.getExternalStorageDirectory().getPath();
+        Log.d("asdfasdfasa", filepath);
         File file = new File(filepath, AUDIO_RECORDER_FOLDER);
 
         if (!file.exists()) {
