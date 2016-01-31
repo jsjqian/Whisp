@@ -24,7 +24,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="com.example.jack.whisp.MyApplication">
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="bOvJCk5HSJqL1DYVddn9STHpz5fSfzphcqTFqP5B" />

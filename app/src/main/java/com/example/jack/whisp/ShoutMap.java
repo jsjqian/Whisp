@@ -86,7 +86,7 @@ public class ShoutMap extends FragmentActivity implements OnMapReadyCallback {
                 gmap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                 gmap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.shout_marker))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.shout_marker_final))
                         .position(MOUNTAIN_VIEW)
                         .title("55 upvotes!"));
 

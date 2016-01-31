@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //GEORGES CODE FOR THE MAP BUTTON
 
-        mDrawer.
+        /*mDrawer.
         shouts = (Button) mDrawer.findViewById(R.id.nav_third_fragment);
 
         shouts.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Intent i = new Intent(MainActivity.this, ShoutMap.class);
                 startActivity(i);
             }
-        });
+        });*/
 
 
         // for M (jack dai's phone)
@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void writetoParse() {
 
         if (currentLocation != null) {
+
             ParseFile parseFile = new ParseFile(new File(filePath));
             parseFile.saveInBackground();
 
@@ -577,6 +578,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             return null;
         }
         return LocationServices.FusedLocationApi.getLastLocation(client);
-
     }
 }
