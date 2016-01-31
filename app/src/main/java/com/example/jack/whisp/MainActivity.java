@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -23,6 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -123,17 +126,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ActivityCompat.requestPermissions(this, permissions, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
+        
+        //list.setFocusable(false);
         list.setOnItemClickListener(this);
 
         this.adapter = new ArrayAdapter<>(this, R.layout.row, R.id.text11);
         list.setAdapter(adapter);
         if (client == null) {
 
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             client = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
-                    .build();
+                    .addApi(AppIndex.API).build();
         }
 
         b1 = (Button) findViewById(R.id.button);
@@ -271,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private View.OnClickListener cancel_button_click_listener = new View.OnClickListener() {
+    private OnClickListener cancel_button_click_listener = new OnClickListener() {
         public void onClick(View v) {
             //use pathname and delete file
             File file = new File(filePath);
@@ -282,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     };
 
-    private View.OnClickListener whisper_click_listener = new View.OnClickListener() {
+    private OnClickListener whisper_click_listener = new OnClickListener() {
         public void onClick(View v) {
 
             writetoParse();
@@ -295,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     };
 
-    private View.OnClickListener replay_click_listener = new View.OnClickListener() {
+    private OnClickListener replay_click_listener = new OnClickListener() {
         public void onClick(View v) {
             MediaPlayer m = new MediaPlayer();
 
@@ -382,17 +389,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
 
         client.connect();
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
 
         client.disconnect();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jack.whisp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
     }
 
     @Override
@@ -422,6 +455,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+
+        Log.d("hello", "hello");
         Whisper whisper = (Whisper) parent.getItemAtPosition(position);
         ParseQuery query = new ParseQuery("Whisper");
         ParseObject object;
