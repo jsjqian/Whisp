@@ -64,6 +64,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/button"
-        android:text="RECORD"></Button>
+        android:text="RECORD"
+        android:background="@drawable/round_buttons"
+        android:backgroundTint="#fd392b"
+        android:textColor="#FFFFFF"
+        >
+
+    </Button>
 
 </RelativeLayout>
